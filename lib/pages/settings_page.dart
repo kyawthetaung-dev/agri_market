@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../models/models.dart' as models;
+import '../theme/app_theme.dart';
 
 class SettingsPage extends StatefulWidget {
   final ThemeMode themeMode;
@@ -16,14 +18,19 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   bool _notificationsEnabled = true;
-  bool _locationEnabled = false;
+  bool _locationEnabled = true;
   String _language = 'English';
   String _currency = 'USD';
+  // String _defaultAddress = 'Home';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(
+        title: const Text('Settings'),
+        backgroundColor: AppTheme.primaryColor,
+        foregroundColor: Colors.white,
+      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           if (constraints.maxWidth > 600) {
@@ -35,6 +42,9 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: ListView(
                     padding: const EdgeInsets.all(16),
                     children: [
+                      _buildSectionTitle(context, 'Delivery'),
+                      _buildDefaultAddressCard(context),
+                      const SizedBox(height: 24),
                       _buildSectionTitle(context, 'Appearance'),
                       _buildThemeSelector(context),
                       const SizedBox(height: 24),
@@ -55,6 +65,9 @@ class _SettingsPageState extends State<SettingsPage> {
                       const SizedBox(height: 24),
                       _buildSectionTitle(context, 'Account'),
                       _buildAccountOptions(context),
+                      const SizedBox(height: 24),
+                      _buildSectionTitle(context, 'Support'),
+                      _buildSupportOptions(context),
                     ],
                   ),
                 ),
@@ -65,20 +78,37 @@ class _SettingsPageState extends State<SettingsPage> {
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                // Profile Section
+                _buildProfileCard(context),
+                const SizedBox(height: 16),
+
+                _buildSectionTitle(context, 'Delivery'),
+                _buildDefaultAddressCard(context),
+                _buildSavedAddresses(context),
+                const SizedBox(height: 16),
+
                 _buildSectionTitle(context, 'Appearance'),
                 _buildThemeSelector(context),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
+
                 _buildSectionTitle(context, 'Preferences'),
                 _buildLanguageSelector(context),
                 _buildCurrencySelector(context),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
+
                 _buildSectionTitle(context, 'Notifications'),
                 _buildNotificationToggle(context),
                 _buildLocationToggle(context),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
+
                 _buildSectionTitle(context, 'Account'),
                 _buildAccountOptions(context),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
+
+                _buildSectionTitle(context, 'Support'),
+                _buildSupportOptions(context),
+                const SizedBox(height: 16),
+
                 _buildSectionTitle(context, 'About'),
                 _buildAboutSection(context),
               ],
@@ -89,14 +119,136 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  Widget _buildProfileCard(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundColor: AppTheme.primaryColor,
+              child: const Icon(Icons.person, color: Colors.white, size: 30),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Min Aung',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  ),
+                  Text(
+                    '+95 987 654 321',
+                    style: TextStyle(color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.edit),
+              color: AppTheme.primaryColor,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildSectionTitle(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Text(
         title,
-        style: Theme.of(
-          context,
-        ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  Widget _buildDefaultAddressCard(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: const Icon(Icons.home, color: AppTheme.primaryColor),
+        ),
+        title: const Text('Default Delivery Address'),
+        subtitle: Text(
+          models.SampleData.savedAddresses.first.fullAddress,
+          style: const TextStyle(fontSize: 12),
+        ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap: () {},
+      ),
+    );
+  }
+
+  Widget _buildSavedAddresses(BuildContext context) {
+    return Card(
+      child: Column(
+        children: [
+          ...models.SampleData.savedAddresses.map((address) {
+            return ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: address.isDefault
+                      ? AppTheme.primaryColor.withOpacity(0.1)
+                      : Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  address.label == 'Home' ? Icons.home : Icons.work,
+                  color: address.isDefault
+                      ? AppTheme.primaryColor
+                      : Colors.grey,
+                ),
+              ),
+              title: Text(address.label),
+              subtitle: Text(address.fullAddress),
+              trailing: address.isDefault
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryColor,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Text(
+                        'Default',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  : null,
+              onTap: () {},
+            );
+          }),
+          const Divider(),
+          ListTile(
+            leading: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.add, color: Colors.grey),
+            ),
+            title: const Text('Add New Address'),
+            onTap: () {},
+          ),
+        ],
       ),
     );
   }
@@ -108,7 +260,10 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Theme Mode', style: Theme.of(context).textTheme.titleMedium),
+            const Text(
+              'Theme Mode',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
             const SizedBox(height: 12),
             SegmentedButton<ThemeMode>(
               segments: const [
@@ -225,8 +380,51 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           const Divider(height: 1),
           ListTile(
+            leading: const Icon(Icons.credit_card),
+            title: const Text('Saved Cards'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {},
+          ),
+          const Divider(height: 1),
+          ListTile(
+            leading: const Icon(Icons.favorite),
+            title: const Text('Favorite Shops'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {},
+          ),
+          const Divider(height: 1),
+          ListTile(
             leading: const Icon(Icons.logout, color: Colors.red),
             title: const Text('Logout', style: TextStyle(color: Colors.red)),
+            onTap: () {},
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSupportOptions(BuildContext context) {
+    return Card(
+      child: Column(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.help_outline),
+            title: const Text('Help Center'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {},
+          ),
+          const Divider(height: 1),
+          ListTile(
+            leading: const Icon(Icons.chat_bubble_outline),
+            title: const Text('Live Chat'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {},
+          ),
+          const Divider(height: 1),
+          ListTile(
+            leading: const Icon(Icons.info_outline),
+            title: const Text('Contact Us'),
+            trailing: const Icon(Icons.chevron_right),
             onTap: () {},
           ),
         ],
@@ -255,6 +453,15 @@ class _SettingsPageState extends State<SettingsPage> {
             leading: const Icon(Icons.privacy_tip),
             title: const Text('Privacy Policy'),
             trailing: const Icon(Icons.chevron_right),
+            onTap: () {},
+          ),
+          const Divider(height: 1),
+          ListTile(
+            leading: const Icon(Icons.delete_forever),
+            title: const Text(
+              'Delete Account',
+              style: TextStyle(color: Colors.red),
+            ),
             onTap: () {},
           ),
         ],

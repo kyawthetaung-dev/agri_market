@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Shop App',
+      title: 'AgriMarket',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
@@ -72,6 +72,8 @@ class _MainScreenState extends State<MainScreen> {
     return Scaffold(
       body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: NavigationBar(
+        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+
         selectedIndex: _selectedIndex,
         onDestinationSelected: (int index) {
           setState(() {
@@ -81,27 +83,27 @@ class _MainScreenState extends State<MainScreen> {
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
+            selectedIcon: Icon(Icons.home, size: 30),
             label: 'Home',
           ),
           NavigationDestination(
             icon: Icon(Icons.shopping_cart_outlined),
-            selectedIcon: Icon(Icons.shopping_cart),
+            selectedIcon: Icon(Icons.shopping_cart, size: 30),
             label: 'Cart',
           ),
           NavigationDestination(
             icon: Icon(Icons.receipt_long_outlined),
-            selectedIcon: Icon(Icons.receipt_long),
+            selectedIcon: Icon(Icons.receipt_long, size: 30),
             label: 'Orders',
           ),
           NavigationDestination(
             icon: Icon(Icons.store_outlined),
-            selectedIcon: Icon(Icons.store),
-            label: 'Shops',
+            selectedIcon: Icon(Icons.store, size: 30),
+            label: 'Agri Shops',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
+            selectedIcon: Icon(Icons.settings, size: 30),
             label: 'Settings',
           ),
         ],
